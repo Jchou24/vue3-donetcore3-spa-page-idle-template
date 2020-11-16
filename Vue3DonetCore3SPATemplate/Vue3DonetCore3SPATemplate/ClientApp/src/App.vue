@@ -7,32 +7,38 @@
     {{authenticationInfo}}
   </div>
   <router-view/>
+  <!-- <PageIdle /> -->
+  <PageIdle :idleSeconds="3" :userConfirmSeconds="5" />
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, watch, ref } from 'vue'
 import { useStore } from 'vuex'
-import { IsLogin, GetUserInfo } from '@/api/authentication.ts'
+import PageIdle from '@/components/PageIdle.vue'
+import { IsLogin } from '@/api/authentication.ts'
 
 export default defineComponent({
   name: 'App',
+  components:{
+    PageIdle
+  },
   setup(){
     const store = useStore()
     const unauthInfo = "You are not log in"
-    const authInfo = computed(()=>{ 
-      return `Hi, ${store.state.claims.name}! You are now log in!`
+    // console.log( "store.state.authentication", store.state.authentication )
+    // console.log( "store.state.authentication.claims.name", store.state.authentication.claims.name )
+
+    const NavigationMessage = () => `Hi, ${store.state.authentication.claims.name}! You are now log in!`
+    const authInfo = ref(NavigationMessage())
+    watch( () => store.state.authentication.claims.name, (name: string) => {
+      authInfo.value = NavigationMessage()
     })
     
     const authenticationInfo = computed(() =>{
-      return store.state.isAuthenticated ? authInfo.value : unauthInfo
+      return store.state.authentication.isAuthenticated ? authInfo.value : unauthInfo
     })
 
-    IsLogin().then( response => {
-      store.state.isAuthenticated = Boolean(response.data)
-      if(store.state.isAuthenticated){
-        GetUserInfo(store)
-      }
-    })
+    IsLogin(store)
 
     return {
       authenticationInfo

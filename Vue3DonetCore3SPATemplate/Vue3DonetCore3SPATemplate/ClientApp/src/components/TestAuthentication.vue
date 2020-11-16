@@ -20,20 +20,20 @@
 
 <script lang="ts">
 import { defineComponent, computed, ref } from 'vue';
-import { ILogin, Login, Logout } from '@/api/authentication.ts'
 import { useStore } from 'vuex'
+import { ILogin, Login, Logout } from '@/api/authentication.ts'
 
 export default defineComponent({
   name: 'TestAuthentication',
-  setup(){
+  setup(props, { emit }){
     const store = useStore()
-    const isAuthenticated = computed(() => store.state.isAuthenticated)
+    const isAuthenticated = computed(() => store.state.authentication.isAuthenticated)
     const email = computed({
       get(){
-        return store.state.claims.emailaddress
+        return store.state.authentication.claims.emailaddress
       },
       set(value){
-        store.state.claims.emailaddress = value
+        store.commit("authentication/SetEmail", value)
       }
     })
     const errorMessages = ref([])
@@ -51,6 +51,8 @@ export default defineComponent({
         }
         console.log(error.response)
       })
+
+      emit('login-success')
     }
 
     function logout(){
