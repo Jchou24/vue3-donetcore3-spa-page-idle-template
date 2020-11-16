@@ -58,8 +58,8 @@ namespace Vue3DonetCore3SPATemplate.Controllers
                 AllowRefresh = true,
                 // Refreshing the authentication session should be allowed.
 
-                //ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(5),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                //ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(5),
                 // The time at which the authentication ticket expires. A 
                 // value set here overrides the ExpireTimeSpan option of 
                 // CookieAuthenticationOptions set with AddCookie.
@@ -101,6 +101,16 @@ namespace Vue3DonetCore3SPATemplate.Controllers
         {
             var userInfo = new UserInfo(User.Claims.ToList());
             return userInfo;
+        }
+
+        /// <summary>
+        /// for refreshing session
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult KeepAlive()
+        {
+            return Ok();
         }
     }
 }
